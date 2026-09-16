@@ -1,0 +1,25 @@
+services:
+  mock-supplier:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: mock
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/a/v1/hotels"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  app:
+    build: .
+    environment:
+      # mock-supplier 서비스명으로 접근 - 컨테이너 네트워크에서는 localhost가 아님
+      SUPPLIER_A_BASE_URL: http://mock-supplier:9090
+      SUPPLIER_B_BASE_URL: http://mock-supplier:9090
+    ports:
+      - "8080:8080"
+    depends_on:
+      mock-supplier:
+        condition: service_healthy
