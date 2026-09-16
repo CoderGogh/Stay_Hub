@@ -2,9 +2,7 @@ package com.example.stay_hub.adapter.a;
 
 import java.util.List;
 
-/**
- * Supplier A 숙소 목록(①) 원본 응답. GET /a/v1/hotels
- */
+// GET /a/v1/hotels 원본 응답
 public record SupplierAHotelsResponse(List<Item> items) {
 
     public record Item(String hotelCode, String hotelName, List<RoomType> roomTypes) {
