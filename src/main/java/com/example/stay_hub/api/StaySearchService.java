@@ -53,6 +53,12 @@ public class StaySearchService {
         if (!checkOut.isAfter(checkIn)) {
             throw new IllegalArgumentException("checkOut must be after checkIn");
         }
+        if (adults < 1) {
+            throw new IllegalArgumentException("adults must be at least 1");
+        }
+        if (children < 0) {
+            throw new IllegalArgumentException("children must not be negative");
+        }
 
         List<Accommodation> accommodations = accommodationRepository.findAll();
         Map<SupplierCode, List<Accommodation>> accommodationsBySupplier = accommodations.stream()
