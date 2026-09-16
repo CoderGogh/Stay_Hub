@@ -48,6 +48,16 @@ curl -X POST "http://localhost:9090/control/a/mode?value=no-response"   # 무응
 curl -X POST "http://localhost:9090/control/a/mode?value=normal"        # 정상으로 복구
 ```
 
+### 실행 — Docker
+`mock-supplier`(포트 9090)와 `app`(포트 8080) 두 컨테이너를 함께 띄웁니다.
+`app`은 컨테이너 네트워크에서 `mock-supplier` 서비스명으로 접근하도록 환경 변수를
+오버라이드해 구성되어 있습니다 (`docker-compose.yml` 참고).
+```bash
+docker compose up -d --build
+curl "http://localhost:8080/api/v1/stays/search?checkIn=2026-09-01&checkOut=2026-09-04&adults=2&children=0"
+docker compose down
+```
+
 ## 패키지 구조
 
 ```
