@@ -12,7 +12,7 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * 자사 표준 숙소.
- * 공급사가 다르면 실제로 같은 숙소라도 별개 레코드로 취급한다 (매핑 병합은 비범위).
+ * 공급사가 다르면 같은 숙소라도 별개 레코드 (매핑 병합은 비범위).
  */
 @Entity
 @Table(

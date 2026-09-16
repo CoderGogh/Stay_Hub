@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * 공급사 숙소 목록(①) 정규화 결과.
- * 정적 콘텐츠 성격 — 요금/재고를 포함하지 않는다.
+ * 정적 콘텐츠 — 요금/재고 미포함.
  */
 public record SupplierHotelCatalog(
         String hotelCode,

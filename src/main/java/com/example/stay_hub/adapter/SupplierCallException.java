@@ -4,8 +4,7 @@ import com.example.stay_hub.domain.SupplierCode;
 
 /**
  * 공급사 호출 실패 통일 예외.
- * HTTP 상태 코드 실패든, 'HTTP 200 + 본문 resultCode' 실패든
- * 이 예외 하나로 판정을 통일한다 (부록 A.2 Supplier B 특이사항 대응).
+ * HTTP 상태 코드 실패 / 'HTTP 200 + 본문 resultCode' 실패 -> 이 예외 하나로 통일 (부록 A.2 대응).
  */
 public class SupplierCallException extends RuntimeException {
 

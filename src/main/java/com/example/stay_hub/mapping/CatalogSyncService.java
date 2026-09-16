@@ -16,8 +16,8 @@ import com.example.stay_hub.domain.RoomTypeRepository;
 import com.example.stay_hub.domain.SupplierCode;
 
 /**
- * 공급사 숙소 목록(①)을 자사 표준 숙소·객실 타입 매핑으로 동기화한다.
- * 재고/요금과 달리 정적 콘텐츠 성격이라 검색 핫패스가 아닌 별도 시점에 호출한다.
+ * 공급사 숙소 목록(①) -> 자사 표준 숙소·객실 타입 매핑 동기화.
+ * 정적 콘텐츠 성격 — 검색 핫패스 아닌 별도 시점에 호출.
  */
 @Service
 public class CatalogSyncService {
@@ -39,8 +39,7 @@ public class CatalogSyncService {
 
     @Transactional
     public void syncAll() {
-        // 한 공급사 카탈로그 조회가 실패해도 나머지 공급사 동기화는 계속되어야 한다
-        // (검색 흐름의 부분 실패 허용과 동일한 원칙을 카탈로그 동기화에도 적용)
+        // 공급사별 실패 격리 — 검색 흐름의 부분 실패 허용과 동일 원칙
         for (SupplierCatalogPort port : catalogPorts) {
             try {
                 syncSupplier(port);
