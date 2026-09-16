@@ -1,0 +1,9 @@
+.git
+.gradle
+.idea
+build
+docs/requirements
+*.iml
+CLAUDE.md
+JOURNAL.md
+README.md
