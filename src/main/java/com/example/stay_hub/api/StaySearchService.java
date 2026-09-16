@@ -26,14 +26,14 @@ import reactor.core.publisher.Mono;
 
 /**
  * 통합 검색 서비스.
- * 흐름(§3.5): 보유 숙소를 공급사별로 묶음 → 공급사 병렬 조회 → 정규화/병합 → 반환
+ * 흐름: 보유 숙소를 공급사별로 묶음 → 공급사 병렬 조회 → 정규화/병합 → 반환
  */
 @Service
 public class StaySearchService {
 
     private static final Logger log = LoggerFactory.getLogger(StaySearchService.class);
 
-    // 공급사 재고/요금 API는 한 번에 최대 50개 숙소 코드만 받는다 (부록 A.1/A.2)
+    // 공급사 재고/요금 API는 한 번에 최대 50개 숙소 코드만 받는다
     private static final int SUPPLIER_BATCH_SIZE = 50;
 
     private final AccommodationRepository accommodationRepository;
