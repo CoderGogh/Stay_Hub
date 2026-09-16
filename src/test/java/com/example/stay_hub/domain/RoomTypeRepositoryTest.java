@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * 객실 타입 코드는 "해당 숙소 안에서만" 유일하다는 부록 A.0 규약이
+ * 객실 타입 코드는 "해당 숙소 안에서만" 유일하다는 공급사 스펙 규약이
  * 실제 DB 제약(accommodation_id + supplier_room_type_code)으로 지켜지는지 검증한다.
  */
 @DataJpaTest
