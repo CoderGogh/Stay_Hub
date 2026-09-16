@@ -2,6 +2,8 @@ package com.example.stay_hub.mapping;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import com.example.stay_hub.domain.SupplierCode;
 @Service
 public class CatalogSyncService {
 
+    private static final Logger log = LoggerFactory.getLogger(CatalogSyncService.class);
+
     private final List<SupplierCatalogPort> catalogPorts;
     private final AccommodationRepository accommodationRepository;
     private final RoomTypeRepository roomTypeRepository;
@@ -35,7 +39,15 @@ public class CatalogSyncService {
 
     @Transactional
     public void syncAll() {
-        catalogPorts.forEach(this::syncSupplier);
+        // 한 공급사 카탈로그 조회가 실패해도 나머지 공급사 동기화는 계속되어야 한다
+        // (검색 흐름의 부분 실패 허용과 동일한 원칙을 카탈로그 동기화에도 적용)
+        for (SupplierCatalogPort port : catalogPorts) {
+            try {
+                syncSupplier(port);
+            } catch (Exception e) {
+                log.warn("공급사 카탈로그 동기화 실패 - 다른 공급사는 계속 진행: supplier={}", port.supplierCode(), e);
+            }
+        }
     }
 
     private void syncSupplier(SupplierCatalogPort port) {
