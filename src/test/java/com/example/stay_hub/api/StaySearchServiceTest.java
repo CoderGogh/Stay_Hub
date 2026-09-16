@@ -137,4 +137,24 @@ class StaySearchServiceTest {
         assertThatThrownBy(() -> service.search(CHECK_IN, CHECK_IN, 2, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 성인_인원이_1명_미만이면_예외() {
+        StaySearchService service = new StaySearchService(
+                accommodationRepository, roomTypeRepository, List.of(portA, portB));
+
+        assertThatThrownBy(() -> service.search(CHECK_IN, CHECK_OUT, 0, 0))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.search(CHECK_IN, CHECK_OUT, -1, 0))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 아동_인원이_음수이면_예외() {
+        StaySearchService service = new StaySearchService(
+                accommodationRepository, roomTypeRepository, List.of(portA, portB));
+
+        assertThatThrownBy(() -> service.search(CHECK_IN, CHECK_OUT, 2, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
