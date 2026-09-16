@@ -80,3 +80,51 @@
   PR을 Claude가 생성했습니다.
 - `spring-boot-starter-aop` 빌드 실패처럼 예상 밖의 문제가 나왔을 때도, Claude가 Maven Central을 직접
   조회해 원인을 특정하고 대체 아티팩트를 찾아 해결했습니다.
+
+## Day 2 — Docker화, 요구사항 재점검, 버그 수정
+
+### 수행 내용
+- Docker 지원 추가 (멀티 스테이지 Dockerfile, docker-compose로 app + mock-supplier 2개 컨테이너)
+- 안내 문서 문장을 다시 하나씩 짚어가며 요구사항 대비 구현 상태를 재점검
+- 점검 중 발견한 버그 2건을 재현 테스트로 먼저 실패를 확인한 뒤 수정
+- 이 과제의 핵심 조건(동일 공급사 상품 = 항상 동일 내부 식별자, 객실 타입은 숙소 내부에서만 유일)이
+  서비스 레벨 유닛 테스트로만 검증되고 실제 DB 제약으로는 검증된 적이 없다는 것을 발견해
+  `@DataJpaTest` 기반 테스트 추가
+- 각주 지침(키워드 중심) 대비 실제 코드의 각주가 문장형으로 흐른 부분을 찾아 정리
+
+### 발견하고 고친 문제
+
+**1) 카탈로그 동기화가 공급사 간 격리되지 않음**
+`CatalogSyncService.syncAll()`이 `catalogPorts.forEach()`로 순회해서, 한 공급사의
+`fetchCatalog()`가 예외를 던지면 나머지 공급사 동기화까지 전부 멈췄다. 검색 흐름(④)에서는
+공급사별로 실패를 격리해놓고 카탈로그 동기화에는 같은 원칙을 안 지킨 셈. 재현 테스트로 먼저
+실패를 확인한 뒤(`CatalogSyncServiceIsolationTest`), 공급사별 try/catch로 격리해 고쳤다.
+
+**2) 검색 인원(adults/children) 검증 누락**
+`adults=0`, `adults=-1`, `children=-1` 같은 값이 검증 없이 그대로 공급사 API 호출에 전달되고
+있었다. `adults>=1`, `children>=0` 검증을 추가하고 실제 서버를 기동해 경계값과 위반값 모두
+curl로 확인했다.
+
+**3) Docker 환경에서 H2 콘솔 접속 차단**
+컨테이너 포트 포워딩을 거치면 H2가 요청 출처를 127.0.0.1로 인식하지 못해 `webAllowOthers`
+기본값에 막혔다. 로컬(`./gradlew bootRun`)에서는 재현되지 않는, Docker 환경 특유의 문제.
+`SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=true`로 해결.
+
+### 시행착오
+- 처음엔 develop 브랜치를 로컬에서 여러 feature 브랜치와 `git merge`로 합쳐봤다가, 이게
+  "리뷰 없는 병합"을 로컬에서 우회하는 셈이 될 수 있다고 판단해 즉시 `git reset --hard
+  origin/develop`으로 되돌리고, 이미 순차적으로 쌓아둔 브랜치 위에서 이어 작업하는 방식으로
+  바꿨다. PR 병합은 항상 명시적으로 요청받은 뒤에만 수행.
+- `@DataJpaTest`가 Spring Boot 4.1.1에서 기존 패키지(`org.springframework.boot.test.
+  autoconfigure.orm.jpa`)로는 컴파일이 안 돼서 처음엔 실패했다. jar 안을 직접 열어봐서 새 패키지
+  (`org.springframework.boot.data.jpa.test.autoconfigure`)를 확인하고 고쳤다 — Spring Boot 4.x의
+  모듈 재구성이 테스트 슬라이스 애너테이션 위치에도 영향을 준 사례.
+
+### 테스트
+- Docker: `docker compose build && up -d` 후 컨테이너 간 통신(app -> mock-supplier)으로
+  카탈로그 동기화·검색·입력 검증까지 로컬 실행과 동일하게 동작하는 것을 확인
+- 응답 필드 완전성: 안내 문서가 요구하는 7개 필드(내부 숙소/객실 식별자·명, 최대 수용 인원,
+  예약 가능 객실 수, 출처 공급사, 요금, 부분 실패 사실)가 실제 응답에 전부 있는지 코드로 대조
+- 비범위 항목(지역/정렬/페이징 파라미터)을 실수로 요구하거나 구현하지 않았는지 확인
+- DB 유니크 제약을 `@DataJpaTest`로 직접 검증 (중복 저장 시 예외, 공급사가 다르면 각각 저장,
+  재조회 시 동일 ID 반환) — 5건 추가, 전체 단위 테스트 15건으로 증가
