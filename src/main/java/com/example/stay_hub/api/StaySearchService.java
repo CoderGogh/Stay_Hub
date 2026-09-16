@@ -69,7 +69,7 @@ public class StaySearchService {
         List<Mono<SupplierCallResult>> calls = buildCalls(
                 accommodationsBySupplier, checkIn, checkOut, adults, children);
 
-        // 병렬 호출: 공급사(및 배치)별 Mono를 동시에 구독해 모두 끝날 때까지 기다린다.
+        // 병렬 호출: 공급사(및 배치)별 Mono 동시 구독, 전체 완료까지 대기
         List<SupplierCallResult> callResults = Flux.merge(calls).collectList().block();
 
         return merge(callResults, roomTypeLookup);
@@ -103,8 +103,7 @@ public class StaySearchService {
             LocalDate checkIn, LocalDate checkOut, int adults, int children) {
         return port.fetchAvailability(hotelCodes, checkIn, checkOut, adults, children)
                 .map(items -> new SupplierCallResult(port.supplierCode(), items, true))
-                // 부분 실패 허용: 한 공급사(배치)가 실패해도 나머지 결과로 응답할 수 있도록
-                // 예외를 실패 표시가 담긴 결과로 흡수한다 (스트림 자체를 죽이지 않음)
+                // 부분 실패 허용: 예외를 실패 표시 결과로 흡수 (스트림 유지, 나머지로 응답)
                 .onErrorResume(ex -> {
                     log.warn("공급사 조회 실패: supplier={}, hotelCodes={}", port.supplierCode(), hotelCodes, ex);
                     return Mono.just(new SupplierCallResult(port.supplierCode(), List.of(), false));
@@ -124,7 +123,7 @@ public class StaySearchService {
                 RoomType roomType = roomTypeLookup.get(lookupKey(
                         result.supplierCode(), availability.hotelCode(), availability.roomTypeCode()));
                 if (roomType == null) {
-                    // 카탈로그 동기화 이전/누락된 상품 — 내부 식별자가 없어 노출할 수 없음
+                    // 매핑 없는 상품(동기화 전/누락) — 내부 식별자 없어 노출 불가
                     log.warn("매핑되지 않은 공급사 상품 - 검색 결과에서 제외: supplier={}, hotelCode={}, roomTypeCode={}",
                             result.supplierCode(), availability.hotelCode(), availability.roomTypeCode());
                     continue;
