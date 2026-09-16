@@ -19,9 +19,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * Supplier B 연동 어댑터.
- * 실패 판정: HTTP는 항상 200이므로 본문 resultCode로 판정한다.
- * Supplier A의 4xx/5xx 실패와 동일하게 SupplierCallException으로 통일해,
- * 상위 계층(검색 서비스)이 공급사별 실패 표현 차이를 몰라도 되게 한다.
+ * 실패 판정: HTTP 항상 200 -> 본문 resultCode로 판정.
+ * A의 4xx/5xx와 동일하게 SupplierCallException으로 통일 (상위 계층은 공급사별 차이 몰라도 됨).
  */
 @Component
 public class SupplierBAdapter implements SupplierCatalogPort, SupplierAvailabilityPort {
