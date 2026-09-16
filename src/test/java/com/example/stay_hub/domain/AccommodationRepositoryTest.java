@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * 실제 DB(H2) 유니크 제약이 설계 원칙을 강제하는지 검증한다.
- * "같은 공급사 상품은 항상 같은 내부 식별자로 조회되어야 한다"는 이 과제의 필수 조건이므로
+ * "같은 공급사 상품은 항상 같은 내부 식별자로 조회되어야 한다"는 필수 조건이므로
  * 서비스 로직뿐 아니라 DB 제약 수준에서도 보장되는지 직접 확인한다.
  */
 @DataJpaTest
