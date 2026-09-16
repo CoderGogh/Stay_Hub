@@ -2,10 +2,7 @@ package com.example.stay_hub.adapter;
 
 import java.util.List;
 
-/**
- * 공급사 숙소 목록(①) 정규화 결과.
- * 정적 콘텐츠 — 요금/재고 미포함.
- */
+// 공급사 숙소 목록(①) 정규화 결과. 정적 콘텐츠라 요금/재고는 안 들어있음
 public record SupplierHotelCatalog(
         String hotelCode,
         String hotelName,
