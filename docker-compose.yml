@@ -18,6 +18,9 @@ services:
       # mock-supplier 서비스명으로 접근 - 컨테이너 네트워크에서는 localhost가 아님
       SUPPLIER_A_BASE_URL: http://mock-supplier:9090
       SUPPLIER_B_BASE_URL: http://mock-supplier:9090
+      # 컨테이너 포트 포워딩을 거치면 H2가 요청 출처를 127.0.0.1로 보지 않아
+      # 기본적으로 접속을 막는다 (webAllowOthers). 로컬 개발용 H2 콘솔이라 허용.
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
     ports:
       - "8080:8080"
     depends_on:
