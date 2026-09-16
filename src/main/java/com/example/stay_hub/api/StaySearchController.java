@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 통합 숙박 상품 검색 API.
- * 검색 조건: 날짜·인원뿐 (지역/키워드 필터는 비범위, §3.4).
+ * 검색 조건: 날짜·인원뿐 (지역/키워드 필터는 비범위).
  */
 @RestController
 @RequestMapping("/api/v1/stays")

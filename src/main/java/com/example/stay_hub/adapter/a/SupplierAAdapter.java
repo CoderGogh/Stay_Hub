@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * Supplier A 연동 어댑터.
- * 실패 판정: HTTP 상태 코드 기반 (부록 A.1 참고) — 4xx/5xx를 SupplierCallException으로 통일.
+ * 실패 판정: HTTP 상태 코드 기반 — 4xx/5xx를 SupplierCallException으로 통일.
  */
 @Component
 public class SupplierAAdapter implements SupplierCatalogPort, SupplierAvailabilityPort {
