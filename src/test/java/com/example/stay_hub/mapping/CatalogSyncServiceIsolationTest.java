@@ -18,8 +18,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * 재현 테스트: 한 공급사의 카탈로그 조회가 실패해도 다른 공급사 동기화는 계속되어야 한다.
- * 현재 구현(catalogPorts.forEach)은 이 테스트에서 실패한다 — 수정 전/후 비교용.
+ * 회귀 방지 테스트: 한 공급사의 카탈로그 조회가 실패해도 다른 공급사 동기화는 계속되어야 한다.
+ * 과거 catalogPorts.forEach 순회 구현에서 이 조건이 깨졌던 버그를 재현해 고정한다.
  */
 @ExtendWith(MockitoExtension.class)
 class CatalogSyncServiceIsolationTest {
