@@ -2,7 +2,7 @@ package com.example.stay_hub.mock;
 
 /**
  * Mock Supplier 고정 응답 데이터.
- * 채점 대상이 아니므로 뼈대 수준으로 최소 구성.
+ * 검색 흐름 검증용 최소 구성.
  */
 final class MockSupplierData {
 
